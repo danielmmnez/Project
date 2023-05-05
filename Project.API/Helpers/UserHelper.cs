@@ -67,7 +67,5 @@ namespace Project.API.Helpers
         {
             await _signInManager.SignOutAsync();
         }
-
-
     }
 }

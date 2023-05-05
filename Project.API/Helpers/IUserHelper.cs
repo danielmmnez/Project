@@ -16,11 +16,8 @@ namespace Project.API.Helpers
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);
 
-
         Task<SignInResult> LoginAsync(LoginDTO model);
 
         Task LogoutAsync();
-
-
     }
 }

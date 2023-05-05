@@ -25,7 +25,7 @@ namespace Project.API.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("1010", "D", "M", "dm@gmail.com", "123 456 7890", "Calle Numero", UserType.Admin);
+            await CheckUserAsync("1010", "daniel", "mmnez", "danielmmnez@gmail.com", "123 456 7890", "Calle Numero", UserType.Admin);
         }
 
         private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)

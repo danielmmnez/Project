@@ -9,16 +9,16 @@ namespace Project.WEB.Auth
         {
             await Task.Delay(3000);
             var anonimous = new ClaimsIdentity();
-            var dmmnzUser = new ClaimsIdentity(new List<Claim>
+            var danielmmnezUser = new ClaimsIdentity(new List<Claim>
         {
-            new Claim("FirstName", "D"),
-            new Claim("LastName", "M"),
-            new Claim(ClaimTypes.Name, "dm@gmail.com"),
+            new Claim("FirstName", "daniel"),
+            new Claim("LastName", "mmnez"),
+            new Claim(ClaimTypes.Name, "danielmmnez@gmail.com"),
             new Claim(ClaimTypes.Role, "Admin")
 
         },
                 authenticationType: "test");
-            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(dmmnzUser)));
+            return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(danielmmnezUser)));
         }
     }
 }
