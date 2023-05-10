@@ -18,6 +18,8 @@ namespace Project.API.Data
 
         public DbSet<Specie> Species { get; set; }
 
+        public DbSet<Animal> Animals { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -25,6 +27,7 @@ namespace Project.API.Data
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
             modelBuilder.Entity<Specie>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Animal>().HasIndex(c => c.Name).IsUnique();
         }
     }
     
