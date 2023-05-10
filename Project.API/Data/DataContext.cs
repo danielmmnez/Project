@@ -16,12 +16,16 @@ namespace Project.API.Data
 
         public DbSet<State> States { get; set; }
 
+        public DbSet<Specie> Species { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
+            modelBuilder.Entity<Specie>().HasIndex(c => c.Name).IsUnique();
         }
     }
+    
 }

@@ -1,0 +1,34 @@
+﻿@page "/specie/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear Especie</h3>
+
+<SpecieForm @ref="specieForm" Specie="specie" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Specie specie = new();
+    private SpecieForm? specieForm;
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post("api/specie", specie);
+
+        if (httpResponse.Error)
+        {
+            var mensajeError = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            specieForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("specie");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/specie");
+    }
+}
