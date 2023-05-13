@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Project.API.Data;
 using Project.Shared.Entities;
 
-
 namespace Project.API.Controllers
 {
     [ApiController]
@@ -24,11 +23,31 @@ namespace Project.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Disease diseases)
+        public async Task<ActionResult> Post(Disease disease)
         {
-            _context.Add(diseases);
-            await _context.SaveChangesAsync();
-            return Ok(diseases);
+            _context.Add(disease);
+            try
+            {
+
+                await _context.SaveChangesAsync();
+            return Ok(disease);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un registro con el mismo nombre.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
         }
 
         [HttpGet("{id:int}")]
@@ -47,11 +66,31 @@ namespace Project.API.Controllers
         public async Task<ActionResult> Put(Disease disease)
         {
             _context.Update(disease);
-            await _context.SaveChangesAsync();
-            return Ok(disease);
-        }
+                try
+                {
 
-        [HttpDelete("{id:int}")]
+                    await _context.SaveChangesAsync();
+            return Ok(disease);
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                    {
+                        return BadRequest("Ya existe un registro con el mismo nombre.");
+                    }
+                    else
+                    {
+                        return BadRequest(dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(exception.Message);
+                }
+
+            }
+
+            [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
             var afectedRows = await _context.Diseases

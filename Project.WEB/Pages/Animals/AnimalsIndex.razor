@@ -1,4 +1,4 @@
-﻿@page "/animal"
+﻿@page "/animals"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -6,10 +6,10 @@
 <h3>Animal</h3>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/animal/create">Nuevo Animal</a>
+    <a class="btn btn-primary" href="/animals/create">Nuevo Animal</a>
 </div>
 
-<GenericList MyList="Animal">
+<GenericList MyList="Animals">
     <Body>
         <table class="table table-striped">
             <thead>
@@ -19,12 +19,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var animal in Animal!)
+                @foreach (var animal in Animals!)
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            <a href="/animals/edit/@animal.Id" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(animal))>Borrar</button>
                         </td>
                         <td>
                             @animal.Name
@@ -37,7 +37,7 @@
 </GenericList>
 
 @code {
-    public List<Animal>? Animal { get; set; }
+    public List<Animal>? Animals { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -46,8 +46,8 @@
 
     private async Task Load()
     {
-        var responseHppt = await repository.Get<List<Animal>>("api/animal");
-        Animal = responseHppt.Response!;
+        var responseHppt = await repository.Get<List<Animal>>("api/animals");
+        Animals = responseHppt.Response!;
     }
 
     private async Task Delete(Animal animal)
@@ -67,7 +67,7 @@
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/animal/{animal.Id}");
+        var responseHTTP = await repository.Delete($"api/animals/{animal.Id}");
 
         if (responseHTTP.Error)
         {

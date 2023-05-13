@@ -1,4 +1,4 @@
-﻿@page "/specie/create"
+﻿@page "/animals/create"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -13,7 +13,7 @@
 
     private async Task Create()
     {
-        var httpResponse = await repository.Post("api/animal", animal);
+        var httpResponse = await repository.Post("api/animals", animal);
 
         if (httpResponse.Error)
         {
@@ -23,12 +23,12 @@
         else
         {
             animalForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("animal");
+            navigationManager.NavigateTo("animals");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("/animal");
+        navigationManager.NavigateTo("/animals");
     }
 }

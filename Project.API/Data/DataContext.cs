@@ -5,7 +5,6 @@ using Project.Shared.Entities;
 namespace Project.API.Data
 {
     public class DataContext : IdentityDbContext<User>
-
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

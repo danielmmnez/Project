@@ -1,4 +1,4 @@
-﻿@page "/manager"
+﻿@page "/managers"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -6,10 +6,10 @@
 <h3>Gerente</h3>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/manager/create">Nuevo Gerente</a>
+    <a class="btn btn-primary" href="/managers/create">Nuevo Gerente</a>
 </div>
 
-<GenericList MyList="Manager">
+<GenericList MyList="Managers">
     <Body>
         <table class="table table-striped">
             <thead>
@@ -19,12 +19,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var manager in Manager!)
+                @foreach (var manager in Managers!)
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            <a href="/managers/edit/@manager.Id" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(manager))>Borrar</button>
                         </td>
                         <td>
                             @manager.Name
@@ -37,7 +37,7 @@
 </GenericList>
 
 @code {
-    public List<Manager>? Manager { get; set; }
+    public List<Manager>? Managers { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -46,8 +46,8 @@
 
     private async Task Load()
     {
-        var responseHppt = await repository.Get<List<Manager>>("api/manager");
-        Manager = responseHppt.Response!;
+        var responseHppt = await repository.Get<List<Manager>>("api/managers");
+        Managers = responseHppt.Response!;
     }
 
     private async Task Delete(Manager manager)
@@ -67,7 +67,7 @@
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/manager/{manager.Id}");
+        var responseHTTP = await repository.Delete($"api/managers/{manager.Id}");
 
         if (responseHTTP.Error)
         {

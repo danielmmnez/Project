@@ -1,4 +1,4 @@
-﻿@page "/disease/create"
+﻿@page "/diseases/create"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -13,7 +13,7 @@
 
     private async Task Create()
     {
-        var httpResponse = await repository.Post("api/disease", disease);
+        var httpResponse = await repository.Post("api/diseases", disease);
 
         if (httpResponse.Error)
         {
@@ -23,12 +23,12 @@
         else
         {
             diseaseForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("disease");
+            navigationManager.NavigateTo("diseases");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("/disease");
+        navigationManager.NavigateTo("/diseases");
     }
 }
