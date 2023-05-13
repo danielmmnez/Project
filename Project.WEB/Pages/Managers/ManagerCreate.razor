@@ -1,4 +1,4 @@
-﻿@page "/manager/create"
+﻿@page "/managers/create"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -13,7 +13,7 @@
 
     private async Task Create()
     {
-        var httpResponse = await repository.Post("api/manager", manager);
+        var httpResponse = await repository.Post("api/managers", manager);
 
         if (httpResponse.Error)
         {
@@ -23,12 +23,12 @@
         else
         {
             managerForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("manager");
+            navigationManager.NavigateTo("/managers");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("/manager");
+        navigationManager.NavigateTo("/managers");
     }
 }

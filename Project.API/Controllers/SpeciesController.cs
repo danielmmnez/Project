@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.API.Data;
 using Project.Shared.Entities;
+using System;
 
 
 namespace Project.API.Controllers
@@ -24,11 +25,31 @@ namespace Project.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Specie species)
+        public async Task<ActionResult> Post(Specie specie)
         {
-            _context.Add(species);
-            await _context.SaveChangesAsync();
-            return Ok(species);
+            _context.Add(specie);
+            try
+            {
+
+                await _context.SaveChangesAsync();
+            return Ok(specie);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
         }
 
         [HttpGet("{id:int}")]
@@ -47,8 +68,28 @@ namespace Project.API.Controllers
         public async Task<ActionResult> Put(Specie specie)
         {
             _context.Update(specie);
-            await _context.SaveChangesAsync();
+            try
+            {
+
+                await _context.SaveChangesAsync();
             return Ok(specie);
+        }
+    catch (DbUpdateException dbUpdateException)
+    {
+        if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+        {
+            return BadRequest("Ya existe un país con el mismo nombre.");
+    }
+        else
+        {
+            return BadRequest(dbUpdateException.InnerException.Message);
+}
+    }
+    catch (Exception exception)
+    {
+    return BadRequest(exception.Message);
+}
+
         }
 
         [HttpDelete("{id:int}")]

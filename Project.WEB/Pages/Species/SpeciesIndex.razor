@@ -1,4 +1,4 @@
-﻿@page "/specie"
+﻿@page "/species"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -6,10 +6,10 @@
 <h3>Especie</h3>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/specie/create">Nueva Especie</a>
+    <a class="btn btn-primary" href="/species/create">Nueva Especie</a>
 </div>
 
-<GenericList MyList="Specie">
+<GenericList MyList="Species">
     <Body>
         <table class="table table-striped">
             <thead>
@@ -19,12 +19,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var specie in Specie!)
+                @foreach (var specie in Species!)
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            <a href="/species/edit/@specie.Id" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(specie))>Borrar</button>
                         </td>
                         <td>
                             @specie.Name
@@ -37,7 +37,7 @@
 </GenericList>
 
 @code {
-    public List<Specie>? Specie{ get; set; }
+    public List<Specie>? Species{ get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -46,8 +46,8 @@
 
     private async Task Load()
     {
-        var responseHppt = await repository.Get<List<Specie>>("api/specie");
-        Specie = responseHppt.Response!;
+        var responseHppt = await repository.Get<List<Specie>>("api/species");
+        Species = responseHppt.Response!;
     }
 
     private async Task Delete(Specie specie)
@@ -67,7 +67,7 @@
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/specie/{specie.Id}");
+        var responseHTTP = await repository.Delete($"api/species/{specie.Id}");
 
         if (responseHTTP.Error)
         {

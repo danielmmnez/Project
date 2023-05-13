@@ -1,4 +1,4 @@
-﻿@page "/animal/edit/{Id:int}"
+﻿@page "/animals/edit/{Id:int}"
 @inject NavigationManager navigationManager
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
@@ -23,13 +23,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHTTP = await repository.Get<Animal>($"api/animal/{Id}");
+        var responseHTTP = await repository.Get<Animal>($"api/animals/{Id}");
 
         if (responseHTTP.Error)
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                navigationManager.NavigateTo("animal");
+                navigationManager.NavigateTo("animals");
             }
             else
             {
@@ -45,7 +45,7 @@ else
 
     private async Task Edit()
     {
-        var responseHTTP = await repository.Put("api/animal", animal);
+        var responseHTTP = await repository.Put("api/animals", animal);
 
         if (responseHTTP.Error)
         {
@@ -55,13 +55,13 @@ else
         else
         {
             animalForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("animal");
+            navigationManager.NavigateTo("animals");
         }
     }
 
     private void Return()
     {
-        navigationManager.NavigateTo("animal");
+        navigationManager.NavigateTo("animals");
     }
 }
 

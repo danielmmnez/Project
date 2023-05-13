@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Project.API.Data;
 using Project.Shared.Entities;
 
-
 namespace Project.API.Controllers
 {
     [ApiController]
@@ -24,11 +23,31 @@ namespace Project.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Manager managers)
+        public async Task<ActionResult> Post(Manager manager)
         {
-            _context.Add(managers);
-            await _context.SaveChangesAsync();
-            return Ok(managers);
+            _context.Add(manager);
+            try
+            {
+
+                await _context.SaveChangesAsync();
+            return Ok(manager);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un registro con el mismo nombre.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
         }
 
         [HttpGet("{id:int}")]
@@ -47,8 +66,28 @@ namespace Project.API.Controllers
         public async Task<ActionResult> Put(Manager manager)
         {
             _context.Update(manager);
-            await _context.SaveChangesAsync();
+            try
+            {
+
+                await _context.SaveChangesAsync();
             return Ok(manager);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre.");
+                }
+                else
+                {
+                    return BadRequest(dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
         }
 
         [HttpDelete("{id:int}")]

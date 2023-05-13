@@ -1,4 +1,4 @@
-﻿@page "/disease"
+﻿@page "/diseases"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -6,10 +6,10 @@
 <h3>Enfermedades</h3>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/disease/create">Nueva Enfermedad</a>
+    <a class="btn btn-primary" href="/diseases/create">Nueva Enfermedad</a>
 </div>
 
-<GenericList MyList="Disease">
+<GenericList MyList="Diseases">
     <Body>
         <table class="table table-striped">
             <thead>
@@ -19,12 +19,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var disease in Disease!)
+                @foreach (var disease in Diseases!)
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            <a href="/diseases/edit/@disease.Id" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" @onclick=@(() => Delete(disease))>Borrar</button>
                         </td>
                         <td>
                             @disease.Name
@@ -37,7 +37,7 @@
 </GenericList>
 
 @code {
-    public List<Disease>? Disease { get; set; }
+    public List<Disease>? Diseases { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -46,8 +46,8 @@
 
     private async Task Load()
     {
-        var responseHppt = await repository.Get<List<Disease>>("api/disease");
-        Disease = responseHppt.Response!;
+        var responseHppt = await repository.Get<List<Disease>>("api/diseases");
+        Diseases = responseHppt.Response!;
     }
 
     private async Task Delete(Disease disease)
@@ -67,7 +67,7 @@
             return;
         }
 
-        var responseHTTP = await repository.Delete($"api/disease/{disease.Id}");
+        var responseHTTP = await repository.Delete($"api/diseases/{disease.Id}");
 
         if (responseHTTP.Error)
         {
