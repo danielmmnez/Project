@@ -1,0 +1,34 @@
+﻿@page "/zoo/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear Zoológico</h3>
+
+<ZooForm @ref="zooForm" Zoo="zoo" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Zoo zoo = new();
+    private ZooForm? zooForm;
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post("api/zoo", zoo);
+
+        if (httpResponse.Error)
+        {
+            var mensajeError = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            zooForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("zoo");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/zoo");
+    }
+}

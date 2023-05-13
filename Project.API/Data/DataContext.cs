@@ -20,6 +20,12 @@ namespace Project.API.Data
 
         public DbSet<Animal> Animals { get; set; }
 
+        public DbSet<Disease> Diseases { get; set; }
+
+        public DbSet<Zoo> Zoos { get; set; }
+
+        public DbSet<Manager> Managers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +34,9 @@ namespace Project.API.Data
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
             modelBuilder.Entity<Specie>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Animal>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Disease>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Zoo>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Manager>().HasIndex(c => c.Name).IsUnique();
         }
     }
     
