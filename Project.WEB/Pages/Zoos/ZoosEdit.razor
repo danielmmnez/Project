@@ -1,0 +1,67 @@
+﻿@page "/zoo/edit/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<h3>Editar Zoológico</h3>
+
+@if (zoo is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <ZooForm @ref="zooForm" Zoo="zoo" OnValidSubmit="Edit" ReturnAction="Return" />
+}
+
+@code {
+    private Zoo? zoo;
+    private ZooForm? zooForm;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHTTP = await repository.Get<Zoo>($"api/zoo/{Id}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("zoo");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            zoo = responseHTTP.Response;
+        }
+    }
+
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put("api/zoo", zoo);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            zooForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("zoo");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("zoo");
+    }
+}
+

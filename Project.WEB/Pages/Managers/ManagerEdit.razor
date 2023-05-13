@@ -1,0 +1,67 @@
+﻿@page "/manager/edit/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+
+<h3>Editar Gerente</h3>
+
+@if (manager is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <ManagerForm @ref="managerForm" Manager="manager" OnValidSubmit="Edit" ReturnAction="Return" />
+}
+
+@code {
+    private Manager? manager;
+    private ManagerForm? managerForm;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHTTP = await repository.Get<Manager>($"api/manager/{Id}");
+
+        if (responseHTTP.Error)
+        {
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("manager");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+            }
+        }
+        else
+        {
+            manager = responseHTTP.Response;
+        }
+    }
+
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put("api/manager", manager);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            managerForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("manager");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("manager");
+    }
+}
+

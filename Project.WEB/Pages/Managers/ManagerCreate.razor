@@ -1,0 +1,34 @@
+﻿@page "/manager/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear Gerente</h3>
+
+<ManagerForm @ref="managerForm" Manager="manager" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Manager manager = new();
+    private ManagerForm? managerForm;
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post("api/manager", manager);
+
+        if (httpResponse.Error)
+        {
+            var mensajeError = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            managerForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("manager");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/manager");
+    }
+}

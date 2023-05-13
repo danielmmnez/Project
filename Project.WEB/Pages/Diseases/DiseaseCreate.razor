@@ -1,0 +1,34 @@
+﻿@page "/disease/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Crear Enfermedad</h3>
+
+<DiseaseForm @ref="diseaseForm" Disease="disease" OnValidSubmit="Create" ReturnAction="Return" />
+
+@code {
+    private Disease disease = new();
+    private DiseaseForm? diseaseForm;
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post("api/disease", disease);
+
+        if (httpResponse.Error)
+        {
+            var mensajeError = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            diseaseForm!.FormPostedSuccessfully = true;
+            navigationManager.NavigateTo("disease");
+        }
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/disease");
+    }
+}
