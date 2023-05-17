@@ -141,6 +141,7 @@ namespace Project.API.Controllers
             return Ok(await _userHelper.GetUserAsync(User.Identity!.Name!));
         }
 
+
         [HttpPost("changePassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> ChangePasswordAsync(ChangePasswordDTO model)
