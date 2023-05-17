@@ -6,16 +6,43 @@
       <div class="contact-info d-flex align-items-center">
       </div>
       <div class="social-links d-none d-md-block">
-                <AuthorizeView>
-                    <Authorized>
-                        <span>Hola, @context.User.Identity!.Name</span>
+            <!--Inicio de sesion-->
+
+            <AuthorizeView>
+                <Authorized>
+                    Hola, <a href="EditUser" class="nav-link btn btn-link">@context.User.Identity!.Name</a>
+                    @if (!string.IsNullOrEmpty(photoUser))
+                    {
+                        <div class="mx-2">
+                            <img src="@photoUser" width="50" height="50" style="border-radius:50%" />
+                        </div>
+                    }
                     <a href="Logout" class="btn-get-started animate__animated animate__fadeInUp scrollto">Cerrar Sesión</a>
-                    </Authorized>
-                    <NotAuthorized>
+                </Authorized>
+                <NotAuthorized>
                     <a href="Register" class="btn-get-started animate__animated animate__fadeInUp scrollto">Registro</a>
                     <a href="Login" class="btn-get-started animate__animated animate__fadeInUp scrollto">Iniciar Sesión</a>
-                    </NotAuthorized>
-                </AuthorizeView>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            @code {
+                private string? photoUser;
+
+                [CascadingParameter]
+                private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
+
+                protected async override Task OnParametersSetAsync()
+                {
+                    var authenticationState = await authenticationStateTask;
+                    var claims = authenticationState.User.Claims.ToList();
+                    var photoClaim = claims.FirstOrDefault(x => x.Type == "Photo");
+                    if (photoClaim is not null)
+                    {
+                        photoUser = photoClaim.Value;
+                    }
+                }
+            }
+
       </div>
     </div>
   </section>
