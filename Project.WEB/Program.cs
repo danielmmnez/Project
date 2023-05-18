@@ -10,6 +10,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+//API Link
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7268/") });
 builder.Services.AddScoped<IRepository, Repository>();
 

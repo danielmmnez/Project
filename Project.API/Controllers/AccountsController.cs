@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Project.API.Data;
 using Project.API.Helpers;
 using Project.Shared.DTOs;
 using Project.Shared.Entities;
@@ -18,13 +19,17 @@ namespace Project.API.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
         private readonly IFileStorage _fileStorage;
+        private readonly IMailHelper _mailHelper;
+        private readonly DataContext _context;
         private readonly string _container;
 
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext context)
         {
             _userHelper = userHelper;
             _configuration = configuration;
             _fileStorage = fileStorage;
+            _mailHelper = mailHelper;
+            _context = context;
             _container = "users";
         }
 
@@ -32,7 +37,6 @@ namespace Project.API.Controllers
         public async Task<ActionResult> CreateUser([FromBody] UserDTO model)
         {
             User user = model;
-
             if (!string.IsNullOrEmpty(model.Photo))
             {
                 var photoUser = Convert.FromBase64String(model.Photo);
@@ -43,11 +47,30 @@ namespace Project.API.Controllers
             if (result.Succeeded)
             {
                 await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
-                return Ok(BuildToken(user));
+                var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                var tokenLink = Url.Action("ConfirmEmail", "accounts", new
+                {
+                    userid = user.Id,
+                    token = myToken
+                }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+                var response = _mailHelper.SendMail(user.FullName, user.Email,
+                    $"HappyZoo - Confirmación de cuenta",
+                    $"<h1>HappyZoo - Confirmacion de la cuenta</h1>" +
+                    $"<p>Para habilitar el usuario, por favor hacer clic 'Confirmar Email':</p>" +
+                    $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
+
+                if (response.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                return BadRequest(response.Message);
             }
 
             return BadRequest(result.Errors.FirstOrDefault());
         }
+
 
 
         [HttpPost("Login")]
@@ -58,6 +81,16 @@ namespace Project.API.Controllers
             {
                 var user = await _userHelper.GetUserAsync(model.Email);
                 return Ok(BuildToken(user));
+            }
+
+            if (result.IsLockedOut)
+            {
+                return BadRequest("Ha superado el máximo número de intentos, su cuenta está bloqueada, intente de nuevo en 5 minutos.");
+            }
+
+            if (result.IsNotAllowed)
+            {
+                return BadRequest("El usuario no ha sido habilitado, debes de seguir las instrucciones del correo enviado para poder habilitar el usuario.");
             }
 
             return BadRequest("Email o contraseña incorrectos.");
@@ -164,6 +197,55 @@ namespace Project.API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("ConfirmEmail")]
+        public async Task<ActionResult> ConfirmEmailAsync(string userId, string token)
+        {
+            token = token.Replace(" ", "+");
+            var user = await _userHelper.GetUserAsync(new Guid(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.FirstOrDefault());
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("ResedToken")]
+        public async Task<ActionResult> ResedToken([FromBody] EmailDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+            var tokenLink = Url.Action("ConfirmEmail", "accounts", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+            var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                $"Saless- Confirmación de cuenta",
+                $"<h1>Sales - Confirmación de cuenta</h1>" +
+                $"<p>Para habilitar el usuario, por favor hacer clic 'Confirmar Email':</p>" +
+                $"<b><a href ={tokenLink}>Confirmar Email</a></b>");
+
+            if (response.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(response.Message);
         }
     }
 }

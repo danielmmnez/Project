@@ -3,6 +3,120 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
+<!-- ======= Top Bar ======= -->
+<section id="topbar" class="d-flex align-items-center">
+    <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="contact-info d-flex align-items-center">
+        </div>
+        <div class="social-links d-none d-md-block">
+            <!--Inicio de sesion-->
+
+            <AuthorizeView>
+                <Authorized>
+                    Hola, <a href="EditUser" class="nav-link btn btn-link">@context.User.Identity!.Name</a>
+                    @if (!string.IsNullOrEmpty(photoUser))
+                    {
+                        <div class="mx-2">
+                            <img src="@photoUser" width="50" height="50" style="border-radius:50%" />
+                        </div>
+                    }
+                    <a href="Logout" class="btn-get-started animate__animated animate__fadeInUp scrollto">Cerrar Sesión</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="Register" class="btn-get-started animate__animated animate__fadeInUp scrollto">Registro</a>
+                    <a href="Login" class="btn-get-started animate__animated animate__fadeInUp scrollto">Iniciar Sesión</a>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            @code {
+                private string? photoUser;
+
+                [CascadingParameter]
+                private Task<AuthenticationState> authenticationStateTask { get; set; } = null!;
+
+                protected async override Task OnParametersSetAsync()
+                {
+                    var authenticationState = await authenticationStateTask;
+                    var claims = authenticationState.User.Claims.ToList();
+                    var photoClaim = claims.FirstOrDefault(x => x.Type == "Photo");
+                    if (photoClaim is not null)
+                    {
+                        photoUser = photoClaim.Value;
+                    }
+                }
+            }
+
+        </div>
+    </div>
+</section>
+
+<header id="header" class="d-flex align-items-center">
+    <div class="container d-flex align-items-center">
+
+        <h1 class="logo me-auto"><a href="">HAPPY ZOO</a></h1>
+        <!-- Uncomment below if you prefer to use an image logo -->
+        <!-- <a href="index.html" class="logo me-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+                <AuthorizeView>
+                    <Authorized>
+                        <li><a class="nav-link scrollto" href="zoos">Zoo</a></li>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <Authorized>
+                        <li><a class="nav-link scrollto" href="managers">Managers</a></li>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <Authorized>
+                        <li><a class="nav-link scrollto" href="animals">Animals</a></li>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <Authorized>
+                        <li><a class="nav-link scrollto" href="species">Species</a></li>
+                    </Authorized>
+                </AuthorizeView>
+                <li class="dropdown">
+                    <a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
+                    <ul>
+                        <AuthorizeView>
+                            <Authorized>
+                                <li><a href="countries">Countries</a></li>
+                            </Authorized>
+                        </AuthorizeView>
+                        <AuthorizeView>
+                            <Authorized>
+                                <li><a href="diseases">Diseases</a></li>
+                            </Authorized>
+                        </AuthorizeView>
+                        <li class="dropdown">
+                            <a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-right"></i></a>
+                            <ul>
+                                <li><a href="#">Deep Drop Down 1</a></li>
+                                <li><a href="#">Deep Drop Down 2</a></li>
+                                <li><a href="#">Deep Drop Down 3</a></li>
+                                <li><a href="#">Deep Drop Down 4</a></li>
+                                <li><a href="#">Deep Drop Down 5</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Drop Down 2</a></li>
+                        <li><a href="#">Drop Down 3</a></li>
+                        <li><a href="#">Drop Down 4</a></li>
+                    </ul>
+                </li>
+                <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+                <li><a class="getstarted scrollto" href="#about">Get Started</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+
+    </div>
+</header><!-- End Header -->
+
 <h3>Zoológico</h3>
 
 <div class="mb-3">
